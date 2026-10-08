@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>反馈跟进 SOP · StepCode 运营</title>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff;
+    --subtle:#f6f8fa;
+    --border:#d1d9e0;
+    --fg:#1f2328;
+    --muted:#59636e;
+    --accent:#0969da;
+    --accent-subtle:#ddf4ff;
+    --success:#1a7f37;
+    --success-subtle:#dafbe1;
+    --danger:#d1242f;
+    --danger-subtle:#ffebe9;
+    --attention:#9a6700;
+    --attention-subtle:#fff8c5;
+    --done:#8250df;
+    --done-subtle:#fbefff;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"PingFang SC","Hiragino Sans GB","Microsoft YaHei";
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--sans);font-size:15px;line-height:1.6;color:var(--fg);background:var(--bg)}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .container{max-width:1360px;margin:0 auto;padding:24px 28px 80px}
+
+  /* ---------- page header ---------- */
+  .page-header{border-bottom:1px solid var(--border);padding-bottom:16px}
+  .breadcrumb{font-size:13px;color:var(--muted)}
+  .breadcrumb a{color:var(--accent)}
+  .breadcrumb .sep{margin:0 4px;color:var(--border)}
+  .title-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px}
+  .title-row h1{font-size:24px;font-weight:600;letter-spacing:-.01em}
+  .desc{color:var(--muted);font-size:14px;margin-top:6px;max-width:760px}
+  .meta-strip{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:12px;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+  .meta-strip b{color:var(--fg);font-weight:600}
+
+  /* ---------- labels ---------- */
+  .label{display:inline-block;border-radius:2em;padding:0 10px;font-size:12px;font-weight:500;line-height:22px;vertical-align:middle;white-space:nowrap}
+  .l-gray{background:#eff1f3;color:#59636e}
+  .l-blue{background:var(--accent-subtle);color:var(--accent)}
+  .l-green{background:var(--success-subtle);color:var(--success)}
+  .l-purple{background:var(--done-subtle);color:var(--done)}
+  .l-amber{background:var(--attention-subtle);color:var(--attention)}
+  .l-red{background:var(--danger-subtle);color:var(--danger)}
+  .counter{display:inline-block;min-width:20px;text-align:center;border-radius:2em;background:rgba(129,139,152,.2);padding:0 6px;font-size:12px;font-weight:600;line-height:18px;vertical-align:2px}
+
+  /* ---------- layout ---------- */
+  .layout{display:grid;grid-template-columns:228px minmax(0,1fr);gap:40px;margin-top:24px}
+  .toc{position:sticky;top:24px;align-self:start;border:1px solid var(--border);border-radius:6px;padding:8px;font-size:13px}
+  .toc .toc-title{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--muted);padding:6px 8px}
+  .toc a{display:block;padding:5px 8px;border-radius:6px;color:var(--fg)}
+  .toc a:hover{background:var(--subtle);text-decoration:none}
+  .toc a .no{font-family:var(--mono);font-size:11px;color:var(--muted);margin-right:6px}
+  .toc .legend{border-top:1px solid var(--border);margin-top:8px;padding:8px;display:flex;flex-wrap:wrap;gap:4px}
+  main{min-width:0}
+
+  /* ---------- headings ---------- */
+  h2{font-size:20px;font-weight:600;padding-bottom:.3em;border-bottom:1px solid var(--border);margin:32px 0 16px;display:flex;align-items:center;gap:10px}
+  h2 .anchor{color:var(--muted);font-weight:400}
+  h3{font-size:15px;font-weight:600;margin:20px 0 8px}
+  p.lead{color:var(--muted);font-size:13.5px;margin:-6px 0 16px;max-width:820px}
+
+  /* ---------- box ---------- */
+  .box{border:1px solid var(--border);border-radius:6px;margin-bottom:16px}
+  .box-header{padding:8px 16px;background:var(--subtle);border-bottom:1px solid var(--border);font-weight:600;font-size:13.5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .box-row{padding:10px 16px;border-top:1px solid var(--border);display:flex;gap:12px;align-items:baseline}
+  .box-row:first-of-type{border-top:none}
+  .box-row .no{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--muted);flex:0 0 22px}
+  .box-row .bd{font-size:13.5px}
+  .box-row .bd b{display:inline}
+  .box-row .bd small{display:block;color:var(--muted);font-size:12.5px;margin-top:1px}
+
+  /* ---------- tables ---------- */
+  .table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:6px;margin-bottom:16px}
+  table{border-collapse:collapse;width:100%;font-size:13.5px}
+  th{background:var(--subtle);text-align:left;font-weight:600;padding:8px 14px;border-bottom:1px solid var(--border);white-space:nowrap;font-size:13px}
+  td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td .pit{color:var(--danger)}
+  td .sub{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+  tr.reserved td{background:#fbfcfd;color:var(--muted)}
+  .mono{font-family:var(--mono);font-size:12px}
+
+  /* ---------- flash ---------- */
+  .flash{border:1px solid var(--border);border-radius:6px;padding:12px 16px;font-size:13.5px;margin-bottom:16px}
+  .flash b{font-weight:600}
+  .flash.danger{border-color:rgba(209,36,47,.4);background:var(--danger-subtle)}
+  .flash.danger b{color:var(--danger)}
+  .flash.info{border-color:rgba(9,105,218,.4);background:var(--accent-subtle)}
+  .flash.info b{color:var(--accent)}
+  .flash.warn{border-color:rgba(154,103,0,.4);background:var(--attention-subtle)}
+  .flash.warn b{color:var(--attention)}
+
+  blockquote{border-left:3px solid var(--border);padding:0 16px;color:var(--muted);font-size:13px;margin:12px 0}
+
+  /* ---------- state pills ---------- */
+  .state{display:inline-flex;align-items:center;gap:6px;border-radius:2em;padding:3px 12px;font-size:13px;font-weight:500;white-space:nowrap}
+  .state::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+  .s-new{background:#eff1f3;color:#59636e}
+  .s-tri{background:var(--accent-subtle);color:var(--accent)}
+  .s-prog{background:var(--done-subtle);color:var(--done)}
+  .s-res{background:var(--success-subtle);color:var(--success)}
+  .s-ver{background:#bde4c7;color:#0b4a26}
+  .s-closed{background:#ddf0ff;color:#0550ae}
+  .s-fix{background:#fff1e5;color:#bc4c00}
+  .s-back{background:#d1f0ec;color:#0f8b8d}
+  .fc-wrap{border:1px solid var(--border);border-radius:6px;padding:14px 8px;background:#fff;margin-bottom:14px}
+  .fc{width:100%;height:auto;display:block}
+  .fc text{font-family:var(--sans)}
+  .strow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .strow .ar{color:var(--muted)}
+
+  /* ---------- flow diagram ---------- */
+  .flowrow{display:grid;grid-template-columns:1fr 14px 1fr 14px 1fr 14px 1fr 14px 1fr 14px 1fr 14px 1fr 14px 1fr;align-items:stretch;margin-bottom:0}
+  .fnode{min-width:0;border:1px solid var(--border);border-radius:6px;padding:9px 10px;background:#fff}
+  .fnode .step{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em}
+  .fnode .t{font-weight:600;font-size:12.5px;margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .fnode .t i{width:7px;height:7px;border-radius:50%;flex:none;font-style:normal}
+  .fnode .s{font-size:10.5px;color:var(--muted);margin-top:3px;line-height:1.45;overflow-wrap:anywhere}
+  .farrow{display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px}
+  .loopback{margin:14px 40px 0;border:2px dashed var(--danger);border-radius:0 0 8px 8px;border-top:none;height:28px;position:relative;opacity:.85}
+  .loopback::before{content:"▲";position:absolute;left:-8px;top:-14px;color:var(--danger);font-size:14px;font-weight:700}
+  .loopback::after{content:"回到起点";position:absolute;left:-2px;top:4px;font-family:var(--mono);font-size:9px;color:var(--danger);writing-mode:vertical-rl;letter-spacing:.2em}
+  .looplabel{display:flex;justify-content:center;margin-top:-13px}
+  .looplabel span{background:var(--danger);color:#fff;font-size:11.5px;font-weight:600;border-radius:2em;padding:2px 14px}
+
+  /* ---------- timeline ---------- */
+  .rhythm{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .tl{list-style:none;position:relative;padding-left:22px}
+  .tl::before{content:"";position:absolute;left:5px;top:8px;bottom:8px;width:2px;background:var(--border)}
+  .tl li{position:relative;padding:6px 0 6px 4px;font-size:13px}
+  .tl li::before{content:"";position:absolute;left:-21px;top:14px;width:10px;height:10px;border-radius:50%;background:#fff;border:2px solid var(--accent)}
+  .tl li .tm{font-family:var(--mono);font-size:11.5px;font-weight:700;margin-right:6px}
+  .tl li .who{margin-right:4px}
+  .tl li small{display:block;color:var(--muted);font-size:12px;margin-top:1px}
+  .rot{margin-top:10px;border-top:1px solid var(--border);padding:8px 0 2px;font-size:12px;color:var(--muted)}
+
+  /* ---------- task list ---------- */
+  .tasklist{list-style:none}
+  .tasklist li{padding:7px 0;border-bottom:1px solid var(--subtle);font-size:13.5px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .tasklist li:last-child{border-bottom:none}
+  .tasklist li::before{content:"☐";font-family:var(--mono);color:var(--muted);flex:0 0 18px}
+  .tasklist li.done::before{content:"☑";color:var(--success)}
+  .tasklist .right{margin-left:auto;display:flex;gap:6px}
+
+  /* ---------- footer ---------- */
+  .foot{border-top:1px solid var(--border);margin-top:40px;padding-top:16px;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+
+  @media (max-width:1360px){
+    .farrow{display:none}
+    .flowrow{grid-template-columns:repeat(8,minmax(0,1fr))}
+  }
+  @media (max-width:1100px){
+    .layout{grid-template-columns:1fr}
+    .toc{position:static;display:none}
+    .farrow{display:none}
+  }
+  @media (max-width:760px){
+    .rhythm{grid-template-columns:1fr}
+    .loopback{margin:14px 8px 0}
+    .flowrow{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ============ page header ============ -->
+  <header class="page-header">
+    <div class="breadcrumb">
+      <a href="StepCode-Scope规划_2026Q4.html">StepCode 运营</a><span class="sep">/</span>反馈跟进 SOP
+    </div>
+    <div class="title-row">
+      <h1>反馈跟进 SOP</h1>
+      <span class="label l-gray">v1.2</span>
+      <span class="label l-blue">owner 周旭</span>
+    </div>
+    <p class="desc">目标只有一句话：<b>每一条用户反馈，都有人跟进、有时限、有闭环。</b>载体：飞书多维表格；流转：实习生复现 → PM 定级 → Dev 修复 → 实习生验收 → 反馈用户。</p>
+    <div class="meta-strip">
+      <span>制定 <b>2026-10-02</b></span>
+      <span>渠道 <b>飞书社区群 · GitHub Issues · 微信群</b></span>
+      <span>载体 <b><a href="https://wvixbzgc0u7.feishu.cn/base/JISWbYrAKaDyUesgozScKAHwnfg?table=tbllVrVKAZ3EEv8Y&view=vewjx48Xm2">多维表格 · StepCode 社区反馈问题库</a></b></span>
+      <span>关联 <b>《Scope 规划》§5 / §6</b></span>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <!-- ============ TOC ============ -->
+    <nav class="toc">
+      <div class="toc-title">ON THIS PAGE</div>
+      <a href="#rules"><span class="no">00</span>基本规则</a>
+      <a href="#s1"><span class="no">01</span>运转总览</a>
+      <a href="#s2"><span class="no">02</span>反馈状态机</a>
+      <a href="#s3"><span class="no">03</span>修复验证</a>
+      <a href="#s4"><span class="no">04</span>渠道值守矩阵</a>
+      <a href="#s5"><span class="no">05</span>指派与备份</a>
+      <a href="#s6"><span class="no">06</span>每日节奏</a>
+      <a href="#s7"><span class="no">07</span>表格字段规范</a>
+      <a href="#s8"><span class="no">08</span>度量与五层防漏</a>
+      <a href="#s9"><span class="no">09</span>例外与边界</a>
+      <a href="#todo"><span class="no">10</span>落地清单</a>
+      <div class="legend">
+        <span class="label l-red">周</span><span class="label l-green">罗</span><span class="label l-purple">王</span><span class="label l-amber">孟</span>
+      </div>
+    </nav>
+
+    <!-- ============ main ============ -->
+    <main>
+
+      <!-- 00 基本规则 -->
+      <h2 id="rules">基本规则 <span class="anchor">#</span></h2>
+      <p class="lead">SOP 的全部机制都是这五条的展开；执行中有冲突时，以这五条为准。</p>
+      <div class="box">
+        <div class="box-row"><span class="no">01</span><div class="bd"><b>表格即事实源。</b>反馈不在多维表格里 = 不存在。三渠道全量回收，<b>当日 24h 内进表</b>。<small>多维表格沿用现有结构，帖号 / issue 号为共享索引。</small></div></div>
+        <div class="box-row"><span class="no">02</span><div class="bd"><b>一条反馈一个 owner。</b>分诊即指派，owner 从跟到关；请假走备份链。<small>owner 为空的条目在每日播报中标红，渠道负责人当场认领。</small></div></div>
+        <div class="box-row"><span class="no">03</span><div class="bd"><b>时限驱动。</b>首响：bug 24h · 需求 48h · 咨询当日；P0 一小时内拉人。<small>超时自动进入播报与周报清单，不需要任何人记得。</small></div></div>
+        <div class="box-row"><span class="no">04</span><div class="bd"><b>闭环回到用户，且以实测为准。</b>修复 / 结论必须回到<b>原渠道</b>告知用户并请其验证；修没修好以<b>重放不重现</b>为准（§3）。<small>不回话不算已修复；研发说修好了不算，重放过关才算。</small></div></div>
+        <div class="box-row"><span class="no">05</span><div class="bd"><b>对账兜底。</b>每日播报核对渠道消息量 vs 表格新增量，周报点名老化条目。<small>漏接率恒为 0 是硬指标，见 §8。</small></div></div>
+      </div>
+
+      <!-- 01 总览 -->
+      <h2 id="s1">运转总览 · 一条从用户回到用户的闭环 <span class="anchor">#</span></h2>
+      <p class="lead">反馈的生命周期不是直线流程，而是回路：从用户出发，最终必须回到用户。中间任何一环断掉，都会在每日对账中暴露。</p>
+      <div class="box" style="padding:16px">
+        <div class="flowrow">
+          <div class="fnode"><div class="step">START</div><div class="t"><i style="background:var(--danger)"></i>用户反馈</div><div class="s">吐槽、报错、建议都算；分不清类型没关系，先收进来</div></div>
+          <div class="farrow">→</div>
+          <div class="fnode"><div class="step">CHANNELS</div><div class="t"><i style="background:var(--accent)"></i>渠道层</div><div class="s">飞书社区群 · GitHub Issues · 微信群；10/16 起 +Web 内置，10/31 起 +桌面内置</div></div>
+          <div class="farrow">→</div>
+          <div class="fnode"><div class="step">DAILY ×2</div><div class="t"><i style="background:var(--attention)"></i>值守回收</div><div class="s">渠道负责人 12:30 / 18:00 两次扫本渠道，语义扫描不靠字面关键词</div></div>
+          <div class="farrow">→</div>
+          <div class="fnode"><div class="step">SSOT</div><div class="t"><i style="background:var(--done)"></i>统一登记</div><div class="s">多维表格按产品拆视图，帖号 / issue 号为共享索引</div></div>
+          <div class="farrow">→</div>
+          <div class="fnode"><div class="step">REPRO</div><div class="t"><i style="background:#218bff"></i>复现 · 实习生</div><div class="s">按线认领复现，填复现状态 / 复现人；无法复现转追问</div></div>
+          <div class="farrow">→</div>
+          <div class="fnode"><div class="step">GRADE</div><div class="t"><i style="background:var(--success)"></i>定级 · PM</div><div class="s">周旭定 P0–P3 或拒绝，指派 Dev 与 ETA</div></div>
+          <div class="farrow">→</div>
+          <div class="fnode"><div class="step">FIX</div><div class="t"><i style="background:var(--fg)"></i>修复 · Dev</div><div class="s">研发修复挂 PR 链接；咨询类由 PM 直接答复</div></div>
+          <div class="farrow">→</div>
+          <div class="fnode"><div class="step">VERIFY</div><div class="t"><i style="background:var(--attention)"></i>验收 · 实习生</div><div class="s">按原复现步骤重放（§3），通过 → 待回流</div></div>
+        </div>
+        <div class="loopback"></div>
+        <div class="looplabel"><span>闭环：验收不重现 → 回原渠道告知用户 → 用户确认 → 已修复归档</span></div>
+      </div>
+      <div class="flash info" style="margin-top:14px">
+        判定「这条反馈跟完了」的唯一标准：<b>用户在原渠道收到了回话，且问题有了着落</b>（修了 / 排了 / 解释了）。
+      </div>
+
+      <!-- 02 状态机 -->
+      <h2 id="s2">反馈状态机 · 没有可以挂着的中间态 <span class="anchor">#</span></h2>
+      <p class="lead">状态与多维表格「处理状态」字段一一对应（九个选项，含非问题 / 重复两个出口），五个角色视图各管一段（① 复现 → ⑤ 回流）。每个状态都有明确的执行角色、进入条件和退出的下一步动作。</p>
+
+      <div class="fc-wrap">
+      <svg viewBox="0 0 1000 1040" role="img" aria-labelledby="fsm-title fsm-desc" xmlns="http://www.w3.org/2000/svg">
+      <title id="fsm-title">StepCode 反馈状态机（详细版）</title>
+      <desc id="fsm-desc">反馈从三个渠道进入，经待审核、复现中、已确认、开发中、待验证、待回流到已修复的七态流转；含三个渠道的负责人与回收方式、每个状态的负责人与动作、P0 快速通道、等待用户、不修了三个分支、验收打回，以及每日截止线。</desc>
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#59636e"/>
+        </marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#d1242f"/>
+        </marker>
+      </defs>
+
+      <!-- ===== 连接线（先线后框） ===== -->
+      <g stroke="#59636e" stroke-width="1.4" fill="none">
+        <!-- 渠道汇入 ① -->
+        <path d="M184,88 V112 Q184,120 192,120 H432 Q440,120 440,128 V148" marker-end="url(#arrow)"/>
+        <line x1="500" y1="88" x2="500" y2="148" marker-end="url(#arrow)"/>
+        <path d="M816,88 V112 Q816,120 808,120 H568 Q560,120 560,128 V148" marker-end="url(#arrow)"/>
+        <!-- 主链 -->
+        <line x1="500" y1="232" x2="500" y2="260" marker-end="url(#arrow)"/>
+        <line x1="500" y1="340" x2="500" y2="368" marker-end="url(#arrow)"/>
+        <line x1="500" y1="448" x2="500" y2="476" marker-end="url(#arrow)"/>
+        <line x1="500" y1="556" x2="500" y2="584" marker-end="url(#arrow)"/>
+        <line x1="500" y1="644" x2="500" y2="672" marker-end="url(#arrow)"/>
+        <line x1="500" y1="724" x2="500" y2="752" marker-end="url(#arrow)"/>
+        <line x1="500" y1="880" x2="500" y2="896" marker-end="url(#arrow)"/>
+        <!-- ① ② → P0 -->
+        <path d="M640,180 H664 Q672,180 672,188 V208 Q672,216 664,216 H692" stroke="#d1242f" stroke-dasharray="5,4" marker-end="url(#arrow-accent)"/>
+        <path d="M640,288 H664 Q672,288 672,280 V240 Q672,232 664,232 H692" stroke="#d1242f" stroke-dasharray="5,4" marker-end="url(#arrow-accent)"/>
+        <!-- P0 → ④（右缘绕行） -->
+        <path d="M972,244 H988 V452 H660 Q652,452 652,460 V472" stroke="#d1242f" stroke-dasharray="5,4" marker-end="url(#arrow-accent)"/>
+        <!-- ② → 等用户补充 -->
+        <path d="M640,320 H732 Q740,320 740,328 V332" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+        <!-- 等用户 → 不修了 -->
+        <path d="M836,432 V472" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+        <!-- ③ → 不修了 -->
+        <path d="M640,424 H676 Q684,424 684,432 V492 Q684,500 676,500 H692" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+        <!-- ⑤ 打回 → ④（左侧回路） -->
+        <path d="M360,620 H324 Q316,620 316,612 V536 Q316,528 324,528 H352" stroke="#d1242f" stroke-dasharray="5,4" marker-end="url(#arrow-accent)"/>
+      </g>
+
+      <!-- ===== 节点 ===== -->
+      <!-- 三个入口点 -->
+      <circle cx="184" cy="8" r="5" fill="#1f2328"/>
+      <circle cx="500" cy="8" r="5" fill="#1f2328"/>
+      <circle cx="816" cy="8" r="5" fill="#1f2328"/>
+
+      <!-- 渠道层 -->
+      <g font-family="'Geist','Noto Sans SC','PingFang SC',sans-serif">
+        <rect x="40" y="16" width="288" height="72" rx="8" fill="rgba(89,99,110,0.10)" stroke="#8c959f" stroke-width="1"/>
+        <text x="184" y="40" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2328">飞书社区群</text>
+        <text x="184" y="58" text-anchor="middle" font-size="12" fill="#59636e">负责人：孟祥雨</text>
+        <text x="184" y="74" text-anchor="middle" font-size="12" fill="#59636e">纯手动：扫话题 · 回复 · 填表</text>
+
+        <rect x="356" y="16" width="288" height="72" rx="8" fill="rgba(89,99,110,0.10)" stroke="#8c959f" stroke-width="1"/>
+        <text x="500" y="40" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2328">GitHub Issues</text>
+        <text x="500" y="58" text-anchor="middle" font-size="12" fill="#59636e">负责人：罗晓阳 + 孟祥雨</text>
+        <text x="500" y="74" text-anchor="middle" font-size="12" fill="#59636e">API 拉 issue + 手动分诊回复</text>
+
+        <rect x="672" y="16" width="288" height="72" rx="8" fill="rgba(89,99,110,0.10)" stroke="#8c959f" stroke-width="1"/>
+        <text x="816" y="40" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2328">微信群</text>
+        <text x="816" y="58" text-anchor="middle" font-size="12" fill="#59636e">负责人：周旭</text>
+        <text x="816" y="74" text-anchor="middle" font-size="12" fill="#59636e">微信本地导出（WeChatMsg）</text>
+      </g>
+
+      <!-- 主链七态（x360 w280 h76） -->
+      <g font-family="'Geist','Noto Sans SC','PingFang SC',sans-serif">
+        <rect x="360" y="156" width="280" height="76" rx="8" fill="#ffffff" stroke="#1f2328" stroke-width="1"/>
+        <text x="500" y="180" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2328">① 待审核</text>
+        <text x="500" y="198" text-anchor="middle" font-size="12" fill="#59636e">渠道负责人（孟 / 罗 / 周）</text>
+        <text x="500" y="214" text-anchor="middle" font-size="12" fill="#8c959f">补全信息登记进表 · 24h 内分流完</text>
+
+        <rect x="360" y="264" width="280" height="76" rx="8" fill="#ffffff" stroke="#1f2328" stroke-width="1"/>
+        <text x="500" y="288" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2328">② 复现中</text>
+        <text x="500" y="306" text-anchor="middle" font-size="12" fill="#59636e">孟 + 罗分担 · QA 到岗后接</text>
+        <text x="500" y="322" text-anchor="middle" font-size="12" fill="#8c959f">按步骤重试复现，填复现状态 / 复现人</text>
+
+        <rect x="360" y="372" width="280" height="76" rx="8" fill="#ffffff" stroke="#1f2328" stroke-width="1"/>
+        <text x="500" y="396" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2328">③ 已确认</text>
+        <text x="500" y="414" text-anchor="middle" font-size="12" fill="#59636e">PM 周旭 · 16:30 定级完</text>
+        <text x="500" y="430" text-anchor="middle" font-size="12" fill="#8c959f">定 P0–P3 或拒绝 · 指派 Dev · 填 ETA</text>
+
+        <rect x="360" y="480" width="280" height="76" rx="8" fill="#ffffff" stroke="#1f2328" stroke-width="1"/>
+        <text x="500" y="504" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2328">④ 开发中</text>
+        <text x="500" y="522" text-anchor="middle" font-size="12" fill="#59636e">Dev（研发同学）</text>
+        <text x="500" y="538" text-anchor="middle" font-size="12" fill="#8c959f">修复并提交 PR，填预计完成时间</text>
+
+        <rect x="360" y="588" width="280" height="76" rx="8" fill="#ffffff" stroke="#1f2328" stroke-width="1"/>
+        <text x="500" y="612" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2328">⑤ 待验证</text>
+        <text x="500" y="630" text-anchor="middle" font-size="12" fill="#59636e">验收实习生 · QA 到岗后主责</text>
+        <text x="500" y="646" text-anchor="middle" font-size="12" fill="#8c959f">修复版本上重放：必现 1 次 · 间歇 ≥3 次</text>
+
+        <rect x="360" y="696" width="280" height="76" rx="8" fill="#ffffff" stroke="#1f2328" stroke-width="1"/>
+        <text x="500" y="720" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2328">⑥ 待回流</text>
+        <text x="500" y="738" text-anchor="middle" font-size="12" fill="#59636e">线 owner（该产品线负责人）</text>
+        <text x="500" y="754" text-anchor="middle" font-size="12" fill="#8c959f">3 天内回原渠道告知 · 填回流状态</text>
+
+        <rect x="360" y="804" width="280" height="76" rx="8" fill="#f6f8fa" stroke="#1f2328" stroke-width="1"/>
+        <text x="500" y="828" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2328">⑦ 已修复</text>
+        <text x="500" y="846" text-anchor="middle" font-size="12" fill="#59636e">系统 · cron 自动</text>
+        <text x="500" y="862" text-anchor="middle" font-size="12" fill="#8c959f">须已告知用户 · 每小时归档</text>
+      </g>
+
+      <!-- 终点 -->
+      <circle cx="500" cy="908" r="8" fill="#ffffff" stroke="#1f2328" stroke-width="1.2"/>
+      <circle cx="500" cy="908" r="5" fill="#1f2328"/>
+
+      <!-- 分支框（右列 x700 w272） -->
+      <g font-family="'Geist','Noto Sans SC','PingFang SC',sans-serif">
+        <rect x="700" y="188" width="272" height="112" rx="8" fill="rgba(209,36,47,0.06)" stroke="#d1242f" stroke-opacity="0.5" stroke-dasharray="4,4" stroke-width="1"/>
+        <text x="716" y="208" font-size="12" font-weight="600" fill="#d1242f">P0 快速通道（最严重问题）</text>
+        <text x="716" y="228" font-size="12" fill="#59636e">崩溃 / 数据丢失 / 安全漏洞</text>
+        <text x="716" y="244" font-size="12" fill="#59636e">大面积不可用 / 迁移被卡住</text>
+        <text x="716" y="260" font-size="12" fill="#59636e">→ 1h 拉群：周 + 实习生 + Dev</text>
+        <text x="716" y="276" font-size="12" fill="#59636e">当天答复用户 · 先处理后补登记</text>
+        <text x="716" y="292" font-size="12" fill="#59636e">跳过排队，直接进 ④ 开发中</text>
+
+        <rect x="700" y="340" width="272" height="92" rx="8" fill="#fff8c5" stroke="#9a6700" stroke-opacity="0.5" stroke-dasharray="4,3" stroke-width="1"/>
+        <text x="716" y="360" font-size="12" font-weight="600" fill="#9a6700">等用户补充（复现不了时）</text>
+        <text x="716" y="380" font-size="12" fill="#59636e">按模板向用户追问，最多 3 次 · 等 2 周</text>
+        <text x="716" y="396" font-size="12" fill="#59636e">补充到位 → 回到 ② 复现中</text>
+        <text x="716" y="412" font-size="12" fill="#59636e">两周无回应 → 不修了（回话说明）</text>
+
+        <rect x="700" y="480" width="272" height="84" rx="8" fill="#f6f8fa" stroke="#8c959f" stroke-dasharray="4,3" stroke-width="1"/>
+        <text x="716" y="500" font-size="12" font-weight="600" fill="#59636e">不修了：非问题 / 重复（终态）</text>
+        <text x="716" y="520" font-size="12" fill="#59636e">PM 判定非问题或与已有反馈重复</text>
+        <text x="716" y="536" font-size="12" fill="#59636e">回原渠道说明原因后关闭</text>
+        <text x="716" y="552" font-size="12" fill="#59636e">重复挂父记录 · 可申诉一次</text>
+      </g>
+
+      <!-- ===== 转移标签（带底衬） ===== -->
+      <g font-family="'Geist','Noto Sans SC','PingFang SC',sans-serif" font-size="12" fill="#59636e">
+        <rect x="508" y="124" width="140" height="16" fill="#ffffff"/>
+        <text x="516" y="136">两扫 12:30 / 18:00</text>
+
+        <rect x="512" y="240" width="140" height="16" fill="#ffffff"/>
+        <text x="516" y="252">当天 15:30 分流完</text>
+        <rect x="512" y="348" width="140" height="16" fill="#ffffff"/>
+        <text x="516" y="360">复现成功（可复现）</text>
+        <rect x="512" y="456" width="148" height="16" fill="#ffffff"/>
+        <text x="516" y="468">定级完成 · 指派 Dev</text>
+        <rect x="512" y="564" width="136" height="16" fill="#ffffff"/>
+        <text x="516" y="576">修复提交（挂 PR）</text>
+        <rect x="512" y="672" width="188" height="16" fill="#ffffff"/>
+        <text x="516" y="684">重放不重现 · 填验收记录</text>
+        <rect x="512" y="780" width="148" height="16" fill="#ffffff"/>
+        <text x="516" y="792">已告知 · 用户确认</text>
+
+        <rect x="648" y="160" width="52" height="16" fill="#ffffff"/>
+        <text x="652" y="172" fill="#d1242f">判 P0</text>
+        <rect x="648" y="308" width="60" height="16" fill="#ffffff"/>
+        <text x="652" y="320">复现不了</text>
+        <rect x="644" y="404" width="52" height="16" fill="#ffffff"/>
+        <text x="648" y="416">定级拒绝</text>
+        <rect x="844" y="446" width="88" height="16" fill="#ffffff"/>
+        <text x="848" y="458">2 周无回应</text>
+
+        <rect x="160" y="560" width="140" height="16" fill="#ffffff"/>
+        <text x="300" y="572" text-anchor="end" fill="#d1242f">仍重现 · 退回重修</text>
+        <rect x="148" y="576" width="152" height="16" fill="#ffffff"/>
+        <text x="300" y="588" text-anchor="end" fill="#d1242f">附验收记录 · 优先级不降</text>
+      </g>
+
+      <!-- ===== 尾注 ===== -->
+      <text x="500" y="936" text-anchor="middle" font-size="12" fill="#59636e" font-family="'Geist','Noto Sans SC','PingFang SC',sans-serif">◆ 结束：用户拿到答复，问题归档；高频问题沉淀进 FAQ</text>
+      <text x="500" y="964" text-anchor="middle" font-size="12" fill="#8c959f" font-family="'Geist','Noto Sans SC','PingFang SC',sans-serif">每日截止线：15:30 分流完 → 16:30 定级完 → 18:00 Dev 接单完；18:00 后新反馈流到明天（P0 除外）</text>
+
+      <!-- ===== 图例 ===== -->
+      <line x1="40" y1="1000" x2="960" y2="1000" stroke="rgba(31,35,40,0.12)" stroke-width="0.8"/>
+      <text x="40" y="1020" font-size="8" fill="#8c959f" letter-spacing="0.14em" font-family="'Geist Mono',ui-monospace,monospace">LEGEND</text>
+      <g font-family="'Geist','Noto Sans SC','PingFang SC',sans-serif" font-size="12" fill="#59636e">
+        <line x1="100" y1="1016" x2="124" y2="1016" stroke="#59636e" stroke-width="1.4"/>
+        <text x="130" y="1020">正常流转</text>
+        <line x1="216" y1="1016" x2="240" y2="1016" stroke="#d1242f" stroke-width="1.4" stroke-dasharray="5,4"/>
+        <text x="246" y="1020">P0 · 打回</text>
+        <line x1="336" y1="1016" x2="360" y2="1016" stroke="#59636e" stroke-width="1.4" stroke-dasharray="4,3"/>
+        <text x="366" y="1020">等待 / 终止分支</text>
+        <circle cx="508" cy="1016" r="5" fill="#ffffff" stroke="#1f2328" stroke-width="1.2"/>
+        <circle cx="508" cy="1016" r="2.5" fill="#1f2328"/>
+        <text x="522" y="1020">终态</text>
+        <text x="600" y="1020">框内第二行 = 负责人 · 第三行 = 做什么</text>
+      </g>
+    </svg>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <tr><th style="width:130px">状态</th><th style="width:150px">执行角色</th><th>进入即要做的事</th><th style="width:220px">退出的下一步</th></tr>
+          <tr><td><span class="state s-new">待审核</span></td><td>渠道负责人（按渠道）</td><td>补全字段：渠道 / 原文摘录 / 用户与环境；<b>原始消息链接必填</b>（增量查重锚点）</td><td>当日内转复现 → <b>复现中</b></td></tr>
+          <tr><td><span class="state s-prog">复现中</span></td><td>孟祥雨 + 罗晓阳（复现人字段标注谁做）</td><td>按线认领：重走复现步骤，填复现状态（可复现 / 无法复现 / 不适用）与复现人，补全环境信息；无法复现按模板追问用户</td><td>复现完成 → <b>已确认</b>，等 PM 定级</td></tr>
+          <tr><td><span class="state s-tri">已确认</span></td><td>PM 周旭</td><td>定级 P0–P3 或拒绝（非问题 / 重复），指派 Dev 负责人、填预计 ETA；P0 直接走快速通道；<b>同时在原渠道首响</b></td><td>转 → <b>开发中</b></td></tr>
+          <tr><td><span class="state s-fix">开发中</span></td><td>Dev 负责人</td><td>修复并挂 PR 链接（只挂已合并修复 PR 与在修官方 open PR）；咨询类不进此态，PM 定级时直接答复</td><td>修复完成 → <b>待验证</b></td></tr>
+          <tr><td><span class="state s-res">待验证</span></td><td>实习生（QA 到岗后主责）</td><td>按 §3 修复验证执行：对版本、对环境、重放（必现 1 次 / 间歇 ≥3 次），填验收记录</td><td>不重现 → <b>待回流</b>；仍重现 → 打回 <b>开发中</b>（Reopened）</td></tr>
+          <tr><td><span class="state s-back">待回流</span></td><td>线 owner</td><td><b>3 天内回原渠道 @用户</b>告知结果与验证方式；回流状态 → 已告知</td><td>用户确认或代验 → <b>已修复</b></td></tr>
+          <tr><td><span class="state s-ver">已修复</span></td><td>cron 自动归档</td><td>前提：回流状态已告知；小时级自动移入「已修复归档」表；高频问题沉淀进 FAQ / 迁移文档</td><td>—（周五抽 10% 复查回话质量）</td></tr>
+        </table>
+      </div>
+
+      <h3>分支与例外</h3>
+      <div class="table-wrap">
+        <table>
+          <tr><th style="width:190px">分支</th><th style="width:130px">从何状态分出</th><th>规则</th></tr>
+          <tr><td><span class="label l-red">P0 快速通道</span></td><td class="mono">待审核 / 复现中</td><td><b>崩溃 / 数据丢失 / 安全 / 大面积不可用 / 迁移严重受阻</b>，任一环节判定即 P0：跳过排队，1h 内周旭 + 复现实习生 + Dev 拉小群，当日给用户阶段性答复。允许先响应后补表，但当天必须补齐登记。</td></tr>
+          <tr><td><span class="label l-gray">非问题 / 重复</span></td><td class="mono">已确认（定级）</td><td>PM 判定非问题或重复也要回话：原渠道说明原因后关闭；重复用「父记录」关联主条目；用户不认同可复议一次。</td></tr>
+          <tr><td><span class="label l-amber">等用户补充</span></td><td class="mono">复现中</td><td>无法复现时按环境模板追问 3 次（复现状态 = 无法复现，状态留复现中）；两周无回应改非问题关闭并告知「随时可重开」。</td></tr>
+          <tr><td><span class="label l-red">Reopened 验收打回</span></td><td class="mono">待验证</td><td>验收仍重现即打回开发中：优先级不低于原级，验收记录附失败现场让研发直接看到；打回率进周报，衡量修复质量。</td></tr>
+        </table>
+      </div>
+
+      <!-- 03 修复验证 -->
+      <h2 id="s3">修复验证 · 已修复的 bug 必须实测不重现 <span class="anchor">#</span></h2>
+      <p class="lead">「开发中」转「待验证」只代表研发认为修好了。进入待回流的唯一通道是本节验收：按原始复现信息重放，确认不再重现——研发说修好了不算，重放过关才算。</p>
+      <div class="box">
+        <div class="box-row"><span class="no">01</span><div class="bd"><b>对版本。</b>先确认修复已进入可安装版本，验证环境与提报环境都升到该版本。<small>用户还在旧版本上看到 bug 不算打回，先引导升级再复测。</small></div></div>
+        <div class="box-row"><span class="no">02</span><div class="bd"><b>对环境。</b>按登记的复现信息还原环境：OS、CLI / Web 版本、模型、账号与数据。<small>外部报错必须在与提报人等价的环境验证——报错可能来自对方机器，本机不复现不能直接放行。</small></div></div>
+        <div class="box-row"><span class="no">03</span><div class="bd"><b>重放。</b>严格按原始复现步骤执行：必现问题重放 1 次，间歇性问题重放 ≥3 次。<small>重放过程留证（截图 / 日志），登记进验证记录。</small></div></div>
+        <div class="box-row"><span class="no">04</span><div class="bd"><b>判定。</b>不重现 → 待回流，填验收记录；仍重现 → 打回开发中（Reopened），优先级不低于原级。<small>打回必须附验收记录，让研发直接看到失败现场。</small></div></div>
+        <div class="box-row"><span class="no">05</span><div class="bd"><b>沉淀。</b>P0 / P1 修复必须沉淀回归用例，进发版 checklist，每次发版前全量执行。<small>防「修了又坏」；回归用例编号回填反馈表格。</small></div></div>
+      </div>
+
+      <h3>三档验证强度</h3>
+      <div class="table-wrap">
+        <table>
+          <tr><th style="width:120px">档位</th><th style="width:220px">适用</th><th style="width:180px">验证人</th><th>要求</th></tr>
+          <tr><td><b>自验重放</b></td><td>司内可控环境、复现路径清晰</td><td>实习生（按线认领）</td><td>按步骤重放，记录环境与结果留证；司内可直接找当事人当面 / 远程验证</td></tr>
+          <tr><td><b>用户实测</b></td><td>外部报错、环境相关</td><td>提报用户（实习生引导）</td><td>回原渠道给验证步骤 + 修复版本，请其升级后复测；用户回复确认才进待回流</td></tr>
+          <tr><td><b>回归用例</b></td><td>P0 / P1 / 高频路径</td><td>QA 写用例 · 发版执行人跑</td><td>用例进回归库，每次发版前全量执行；失败即阻断发版</td></tr>
+        </table>
+      </div>
+      <div class="flash warn">
+        <b>两个常见误判</b> —— ① 用户在旧版本上复现：先确认已升级到修复版本，不算打回；② 间歇性 bug 一次没重现就放行：必须重放 ≥3 次全过，并备注「间歇性，观察一个迭代」。
+      </div>
+
+      <!-- 04 渠道矩阵 -->
+      <h2 id="s4">渠道值守矩阵 · 三渠道各自的收与回 <span class="anchor">#</span></h2>
+      <p class="lead"><b>三个渠道各有专门负责人</b>：飞书社区群 → 孟祥雨、GitHub Issues → 罗晓阳 + 孟祥雨共同、微信群 → 周旭；负责人对本渠道的<b>回收、登记、首响</b>负责，做到每条反馈进到渠道就有人接。三个渠道的回收方式与回话方式各不相同，红字是已踩过的坑。第四、五渠道随产品上线接入时另行指定负责人，复用同一套表格与状态机。</p>
+      <div class="table-wrap">
+        <table>
+          <tr><th style="width:160px">渠道</th><th style="width:270px">回收方式（含坑）</th><th style="width:130px">值守</th><th style="width:170px">登记补充字段</th><th>闭环回话方式</th></tr>
+          <tr>
+            <td><b>飞书社区群</b><span class="sub">话题群 · 外部用户</span></td>
+            <td><b>纯手动</b>：手动扫话题、手动回复用户、手动填表登记，无自动化；语义判断不能只靠关键词<span class="pit">（手动量大易漏——靠每日两扫 + 播报对账兜底）</span></td>
+            <td><span class="label l-amber">孟</span> 主责</td>
+            <td>帖号（共享索引）、话题链接</td>
+            <td>话题内回复；发版时群公告 @相关话题；高频问题沉淀 FAQ 后置顶</td>
+          </tr>
+          <tr>
+            <td><b>GitHub Issues</b><span class="sub">开源用户</span></td>
+            <td>走 API 拉取 issue 与评论<span class="pit">（网页抓取会截断）</span>；label 与表格类型双向同步；外部报错先发环境信息模板</td>
+            <td><span class="label l-green">罗</span> + <span class="label l-amber">孟</span> 共同主责</td>
+            <td>issue 号、label、用户环境</td>
+            <td>issue comment 同步进展；close 时必须写结论；修复版本回链 issue</td>
+          </tr>
+          <tr>
+            <td><b>微信群</b><span class="sub">内部用户 · 最易闭环</span></td>
+            <td>语义扫描 + 直接找当事人补充；可当面 / 远程复现，优先收日志与版本<span class="pit">（无官方 API，hook 有封号风险——走 PC 微信本地导出（WeChatMsg）后交文件处理）</span></td>
+            <td><span class="label l-red">周</span> 主责<br>Web / 桌面上线后按产品认领</td>
+            <td>提报人、部门、环境、可否远程</td>
+            <td>群内回复进展；复杂个案私聊闭环后回群同步结论</td>
+          </tr>
+          <tr class="reserved"><td><b>Web 内置反馈</b><span class="sub">10/16 接入</span></td><td colspan="4">入口自动附带截图 + 环境信息（账号、版本、页面），直接入表免人工补录 —— 罗晓阳负责上线前验收字段完整性</td></tr>
+          <tr class="reserved"><td><b>桌面端内置反馈</b><span class="sub">10/31 接入</span></td><td colspan="4">同上，另附日志路径与更新通道 —— 王晓诺负责验收</td></tr>
+        </table>
+      </div>
+
+      <!-- 05 指派 -->
+      <h2 id="s5">指派与备份 · 分诊即指派，无主反馈为零 <span class="anchor">#</span></h2>
+      <p class="lead">按环节指派：复现与验收是实习生，定级是 PM，修复是 Dev，回流是线 owner。指派结果落在表格对应字段（复现人 / Dev 负责人），字段为空 = 播报标红。</p>
+      <div class="table-wrap">
+        <table>
+          <tr><th style="width:120px">环节</th><th style="width:250px">默认人选</th><th>说明</th></tr>
+          <tr><td><b>复现</b></td><td><span class="label l-amber">孟</span> + <span class="label l-green">罗</span> 两人分担</td><td>按条目认领，谁复现谁填复现人；跨线 / 架构类给周旭；QA 到岗后统一接；Web（10/16）、桌面（10/31）上线后再按线分工</td></tr>
+          <tr><td><b>定级</b></td><td><span class="label l-red">周</span>（PM）</td><td>P0–P3 或拒绝；P0 触发快速通道；咨询类在定级环节直接答复，不进开发</td></tr>
+          <tr><td><b>修复</b></td><td>Dev 负责人（研发）</td><td>PM 定级时指派并给预计 ETA；PR 口径：只挂已合并修复 PR 与在修官方 open PR</td></tr>
+          <tr><td><b>验收</b></td><td>同线复现人轮值</td><td>按 §3 执行并填验收记录；QA 到岗后由 QA 主责</td></tr>
+          <tr><td><b>回流</b></td><td>线 owner</td><td>回原渠道告知用户，回流状态三档；未告知不算闭环</td></tr>
+          <tr><td>高频重复（≥3 条同因）</td><td>线 owner → 提 FAQ</td><td>根治方式是文档挡咨询，不是逐条答复</td></tr>
+        </table>
+      </div>
+      <blockquote>
+        备份链：<span class="label l-green">罗</span> ↔ <span class="label l-purple">王</span> 互备（Web / 桌面）；<span class="label l-amber">孟</span> 的备份 = <span class="label l-red">周</span>；<span class="label l-red">周</span> 的需求池事务备份 = <span class="label l-green">罗</span>。请假提前一天在群里交接，由备份人顶上。
+      </blockquote>
+      <div class="flash danger">
+        <b>P0 快速通道</b> —— 判定（任一即 P0）：崩溃 / 数据丢失 / 安全问题 / 大面积不可用 / 10/16 迁移严重受阻。<br>
+        动作：发现人电话 + 群内 <b>@周旭</b> → 1h 内周旭 + 线 owner + 研发接口人拉小群 → 当日在原渠道给用户阶段性答复 → 事后按正常状态机补登记。
+      </div>
+
+      <!-- 06 节奏 -->
+      <h2 id="s6">每日节奏 · 三条截止线，每周两次复盘 <span class="anchor">#</span></h2>
+      <p class="lead">SOP 不靠自觉运转，靠节拍器：每天三条截止线（分流 / 定级 / 接单）+ 每日两扫 + 对账播报，周一排期、周五复盘。</p>
+      <div class="flash info" style="margin-bottom:14px">
+        每天三条截止线：<b>15:30 分流完 → 16:30 PM 定级完（定级即指派 Dev）→ 18:00 Dev 接单完</b>；18:00 后进来的新反馈<b>流到明天</b>（次日 15:30 前分流），P0 例外随时处理。
+      </div>
+      <div class="rhythm">
+        <div class="box" style="margin-bottom:0">
+          <div class="box-header">每日节拍 <span class="label l-gray">DAILY</span></div>
+          <div style="padding:10px 16px 12px">
+            <ul class="tl">
+              <li><span class="tm">10:00</span><span class="label l-gray">机器人</span><br><small>每日播报：前日新增 / 分诊 / 闭环分产品统计 + <b>对账</b>（渠道消息量 vs 表格新增）+ 超时与无 owner 标红</small></li>
+              <li><span class="tm">12:30</span><span class="label l-gray">渠道负责人</span><br><small>午扫：飞书群（孟）/ GitHub（罗 + 孟）/ 微信群（周）各扫本渠道，收当天新反馈进表、完成首响；周抽查对不上的渠道</small></li>
+              <li><span class="tm">15:30 前</span><span class="label l-gray">渠道负责人</span><br><small><b>当天分流截止</b>：新反馈全部进表、复现人分配完；PM 抽查一遍，漏的当场补</small></li>
+              <li><span class="tm">16:30 前</span><span class="label l-red">PM 周旭</span><br><small><b>当天定级截止</b>：复现完成的条目定级 P0–P3 / 拒绝，指派 Dev、填 ETA——<b>定级即分工</b>；定不完的注明原因，顺延到次日 10:30 前</small></li>
+              <li><span class="tm">18:00</span><span class="label l-gray">渠道负责人 + Dev</span><br><small><b>当天接单截止</b> + 晚扫：当天定级的条目 Dev 确认接收（未接的当晚播报标红）；渠道负责人另过一遍自己名下开发中 / 待验证条目，更新进展或写阻塞原因</small></li>
+              <li><span class="tm">18:00 后</span><span class="label l-gray">流到明天</span><br><small>之后进来的新反馈计入次日批次（次日 15:30 前分流）；复现没做完的自然留在「复现中」次日继续——<b>P0 除外，随时拉群处理</b></small></li>
+              <li><span class="tm">随时</span><span class="label l-red">周</span><br><small>P0 电话直达；洪峰模式（10/16–10/23）全员每日 30min 额外分诊，播报加更</small></li>
+            </ul>
+          </div>
+        </div>
+        <div class="box" style="margin-bottom:0">
+          <div class="box-header">每周节拍 <span class="label l-gray">WEEKLY</span></div>
+          <div style="padding:10px 16px 12px">
+            <ul class="tl">
+              <li><span class="tm">周一 30min</span><span class="label l-red">周</span> 主持<br><small>需求评审：过 P1–P3 需求池出排期建议；过一眼上周闭环率与 SLA 达成率</small></li>
+              <li><span class="tm">周五</span><span class="label l-red">周</span> + <span class="label l-amber">孟</span> 数据<br><small>反馈周报：分渠道 / 产品 / 类型分布，<b>老化清单</b>（&gt;7 天无动作），典型案例 2–3 条，未闭环 Top 5</small></li>
+              <li><span class="tm">周五</span><span class="label l-red">PM</span> 抽检<br><small>已修复条目抽 10% 复查回话质量（是否真的回了用户、话说清楚没有）</small></li>
+              <li><span class="tm">双周</span><span class="label l-red">周</span><br><small>FAQ / 帮助中心增补：高频咨询沉淀成文档，用文档挡重复咨询</small></li>
+              <li><span class="tm">发版前</span><span class="label l-gray">各线 owner</span> 供用例<br><small>双周发版节奏：回归用例全量执行 + 发版 checklist；用例失败阻断发版，周旭把关</small></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:12.5px;color:var(--muted);margin-top:10px">
+        顶班与周末：渠道负责人请假提前一天交接，由备份人顶上；周末与节假日周旭兜底扫描，只保 24h 分流与 P0 响应；工作日按上表节奏执行
+      </div>
+
+      <!-- 07 字段 -->
+      <h2 id="s7">表格字段规范 · 已落地多维表格 <span class="anchor">#</span></h2>
+      <p class="lead">以下为多维表格「StepCode 社区反馈问题库」的实际字段（2026-10-02 已对齐 SOP，历史记录无需迁移）。<span class="label l-green">新增</span> 为本次新增；<b>增量查重锚点 = 原始消息链接</b>（Feedback ID 已废弃留空）。五个角色视图（① 复现 → ⑤ 回流）与状态链一一对应。</p>
+      <div class="table-wrap">
+        <table>
+          <tr><th style="width:200px">字段</th><th style="width:80px">标记</th><th>说明</th></tr>
+          <tr><td class="mono">反馈类型</td><td></td><td>Bug / Feature</td></tr>
+          <tr><td class="mono">用户描述 · 用户预期效果</td><td></td><td>保留原文（外部反馈原文不翻译），防转述失真</td></tr>
+          <tr><td class="mono">一句话总结</td><td></td><td>一句话概括核心问题</td></tr>
+          <tr><td class="mono">反馈来源</td><td></td><td>Step Code 群 / GitHub / 微信群 / 其他；10/16 起 +Web 内置、10/31 起 +桌面内置（届时加选项）</td></tr>
+          <tr><td class="mono">反馈时间 · 预计处理ETA</td><td></td><td>datetime；ETA 由 PM 定级时填</td></tr>
+          <tr><td class="mono">操作系统 · 终端类型 · StepCode 版本</td><td></td><td>环境三项；验收对环境（§3）的依据</td></tr>
+          <tr><td class="mono">复现步骤 · 附件</td><td></td><td>用户原始复现信息与截图；验收重放的依据</td></tr>
+          <tr><td class="mono">问题分组</td><td></td><td>14 组既有分组，视图筛选沿用</td></tr>
+          <tr><td class="mono">复现状态</td><td><span class="label l-gray">已有</span></td><td>待复现 / 可复现 / 无法复现 / 不适用</td></tr>
+          <tr><td class="mono">复现人</td><td><span class="label l-green">新增</span></td><td>罗晓阳 / 王晓诺 / 孟祥雨 / QA 实习生 / 周旭 —— 空值 = 播报标红</td></tr>
+          <tr><td class="mono">PM 审核优先级</td><td></td><td>P0–P3 / 待定 / 拒绝（PM 定级环节产出）</td></tr>
+          <tr><td class="mono">处理状态</td><td></td><td>九选项流转链，与 §2 状态机同名同义</td></tr>
+          <tr><td class="mono">Dev 负责人</td><td></td><td>user 字段，PM 定级时指派</td></tr>
+          <tr><td class="mono">PR 链接</td><td></td><td>既定口径：只挂已合并修复 PR 与在修官方 open PR</td></tr>
+          <tr><td class="mono">原始消息链接</td><td></td><td>群帖 / issue 定位；<b>增量查重唯一锚点</b></td></tr>
+          <tr><td class="mono">验收记录</td><td><span class="label l-green">新增</span></td><td>验收人 + 方式（重放 / 用户实测 / 回归用例）+ 环境版本 + 次数 + 结果</td></tr>
+          <tr><td class="mono">回流状态</td><td><span class="label l-green">新增</span></td><td>未告知 / 已告知 / 用户已确认；已修复前必须完成告知</td></tr>
+          <tr><td class="mono">备注</td><td></td><td>核查结论 / 归因 / 追问记录；用户描述保持原文不动</td></tr>
+        </table>
+      </div>
+
+      <!-- 08 度量 -->
+      <h2 id="s8">度量与五层防漏 · SOP 自己也要被验收 <span class="anchor">#</span></h2>
+      <p class="lead">「每个反馈都有人跟进」不靠口号，靠五层互相独立的兜底；健康度指标进现有数据看板，周报固定呈现。</p>
+      <div class="table-wrap">
+        <table>
+          <tr><th style="width:180px">指标</th><th style="width:110px">目标</th><th>口径与来源</th></tr>
+          <tr><td><b>漏接率</b></td><td><span class="label l-red">= 0</span></td><td>渠道出现但 24h 未进表的反馈数；来自每日播报对账，硬指标</td></tr>
+          <tr><td><b>首响 SLA 达成率</b></td><td><span class="label l-blue">≥ 95%</span></td><td>bug 24h / 需求 48h / 咨询当日；按周统计</td></tr>
+          <tr><td><b>闭环率</b></td><td><span class="label l-green">≥ 90%</span></td><td>待验证 → 待回流 → 已修复 转化率，按周统计</td></tr>
+          <tr><td><b>回流告知率</b></td><td><span class="label l-green">100%</span></td><td>已修复条目必须已回原渠道告知（回流状态 ≥ 已告知）；周五抽检复核</td></tr>
+          <tr><td><b>验收打回率</b></td><td><span class="label l-amber">≤ 10%</span></td><td>待验证验收未通过打回开发中的比例，衡量修复质量；异常升高先查验收环境是否跑偏</td></tr>
+          <tr><td><b>P0/P1 回归覆盖</b></td><td><span class="label l-green">100%</span></td><td>P0 / P1 修复条目沉淀回归用例的比例；发版前全量执行</td></tr>
+          <tr><td><b>&gt;7 天老化数</b></td><td><span class="label l-gray">趋势 ↓</span></td><td>开发中 / 待回流无动作条目数；周报点名 owner</td></tr>
+        </table>
+      </div>
+      <h3>五层防漏</h3>
+      <ul class="tasklist">
+        <li class="done"><b>渠道两扫</b> —— 每日 12:30 / 18:00 各渠道负责人扫本渠道，第一道人工防线</li>
+        <li class="done"><b>播报对账</b> —— 机器人每日核对渠道消息量 vs 表格新增量，差值即疑似漏接</li>
+        <li class="done"><b>无主标红</b> —— owner 为空的条目每日播报置顶，渠道负责人当场认领</li>
+        <li class="done"><b>老化清单</b> —— 最近动作超 7 天自动进周报，owner 必须给说法</li>
+        <li class="done"><b>周五抽检</b> —— 已修复条目抽 10% 复查回话质量，防止"假闭环"</li>
+      </ul>
+
+      <!-- 09 例外 -->
+      <h2 id="s9">例外与边界 · 不属于这条 SOP 的事怎么办 <span class="anchor">#</span></h2>
+      <p class="lead">边界外的反馈不是不处理，而是有明确去处——每一条仍然有回话，只是不占用本 SOP 的产能。</p>
+      <div class="table-wrap">
+        <table>
+          <tr><th style="width:230px">情形</th><th>处理方式</th></tr>
+          <tr><td>平台 / 商业侧（套餐、支付、退款、账号）</td><td>不进本 SOP：登记后标记「转出」，回话指路平台团队，跟踪到转出成功即止</td></tr>
+          <tr><td>情绪 / 吐槽类</td><td>类型记「咨询」：先安抚回话，指向 FAQ 或迁移文档；若含事实 bug 则拆出单独登记跟进</td></tr>
+          <tr><td>无法复现的外部 bug</td><td>按环境模板追问 3 次；仍无法复现转 <span class="label l-amber">Pending-user</span>，两周后关闭并告知可随时重开</td></tr>
+          <tr><td>重复反馈</td><td>合并到主条目；每条重复也要回一句"已在跟，见 xxx"，不冷落任何人</td></tr>
+          <tr><td>需求与研发排期冲突</td><td>线 owner写清冲突点，周一评审会周旭决策；决策结果回话用户（做 / 不做 / 缓做及原因）</td></tr>
+          <tr><td>非官方渠道的反馈（私聊、别的群）</td><td>引导到官方渠道（给入口），同时照常登记跟进——渠道是规范，不是门槛</td></tr>
+        </table>
+      </div>
+
+      <!-- 09 落地清单 -->
+      <h2 id="todo">落地清单 · 从文档变成系统 <span class="counter">6</span> <span class="anchor">#</span></h2>
+      <p class="lead">按时间排序；完成后勾选并在周报同步。</p>
+      <div class="box">
+        <ul class="tasklist" style="padding:8px 16px">
+          <li>多维表格补齐 <span class="label l-green">新增</span> 字段 + 状态单选列<span class="right"><span class="label l-red">周</span><span class="label l-gray">10/09 前</span></span></li>
+          <li>渠道负责人分工与顶班规则群内通知 + 交接模板<span class="right"><span class="label l-red">周</span><span class="label l-gray">10/09 前</span></span></li>
+          <li>外部报错环境信息模板 + issue 回复模板<span class="right"><span class="label l-amber">孟</span> 起草 · <span class="label l-red">周</span> 复核<span class="label l-gray">10/12 前</span></span></li>
+          <li>每日播报机器人改造：分产品统计 → 对账 + 无主标红 + 超时清单<span class="right"><span class="label l-red">周</span> + <span class="label l-amber">孟</span><span class="label l-gray">10/15 前</span></span></li>
+          <li>洪峰演练走一遍全流程：登记 → 分诊 → 首响 → 升级 → 闭环<span class="right"><span class="label l-gray">全员</span><span class="label l-gray">10/14</span></span></li>
+          <li>回归用例库 v0：P0 / P1 已修复条目 100% 补用例，接进发版 checklist<span class="right"><span class="label l-gray">各线 owner</span><span class="label l-gray">10/31 前</span></span></li>
+        </ul>
+      </div>
+
+      <footer class="foot">
+        v1.2 · 2026-10-02 · SOP 落地多维表格：状态链九选项（+复现中/待回流）、复现人/验收记录/回流状态字段、①–⑤ 角色视图；状态机改为「实习生复现 → PM 定级 → Dev 修复 → 实习生验收 → 反馈用户」 · 周旭 · 配套《StepCode Scope 规划 2026 Q4》（内网文档）
+      </footer>
+
+    </main>
+  </div>
+</div>
+</body>
+</html>
